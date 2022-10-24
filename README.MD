@@ -1,4 +1,4 @@
-# Shell book example with notes
+# Shell book examples with notes
 
 The bin directory contains all the examples from the book with small modifications so that they work with zsh and bash
 
