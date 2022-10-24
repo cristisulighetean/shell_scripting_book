@@ -3,7 +3,7 @@
 
 # Chapter 1 - Intro
 - Command2 is executed only if command1 exits with status code other than 0
-$ command1 || command2
+'$ command1 || command2'
 
 - Command 2 is executed only if command1 exists with status code 0
 $ command1 && command 2
