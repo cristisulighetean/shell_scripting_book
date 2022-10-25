@@ -9,11 +9,16 @@ if [ ! "$#" = 2 ] ; then
 fi
 
 case $2 in
-	[A-C] | [a-c]) echo "$1 is a star pupil"
+	[A-C] | [a-c]) 
+		echo "$1 is a star pupil"
 	;;
-	[Dd]) echo "$1 needs to try a little harder!"
+	[Dd]) 	
+		echo "$1 needs to try a little harder!"
 	;;
-	[E-F] | [e-f]) echo "$1 could do a lot better next year!"
+	[E-F] | [e-f]) 
+		echo "$1 could do a lot better next year!"
 	;;
-	*) echo "Grade could not be evaluated for $1"
+	*) 
+		echo "Grade could not be evaluated for $1"
+	;;
 esac
