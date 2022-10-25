@@ -219,4 +219,125 @@ fi
 
 In bash we can use the 'case' statement to test for simple values, such as int or strings
 
-## Chapter 4 - ...
+Syntax:
+
+```sh
+case expression in
+    case1)
+        statement1
+        statement2
+    ;;
+    case2)
+        statement1
+        statement2
+    ;;
+    *)
+        statement1
+    ;;
+esac
+```
+
+### Building a front-end with grep
+
+```sh
+usage="Usage: search.sh file string operation"
+
+if [ ! "$#" = 3 ] ; then
+	echo "$usage"
+	exit 2
+fi
+
+# Check if $3 is a file
+[ ! -f $1 ] && exit 3
+
+case $3 in 
+	[cC])
+		msg="Counting matches in $1 of $2"
+		opt="-c"
+		;;
+	[pP])
+		msg="Print the matches of $2 in $1"
+		opt="-p"
+		;;
+	[dD])
+		msg="Printing all the lines but those matching $3 from $1"
+		opt="-v"
+		;;
+	*)
+		echo "Could not evaluate $1 $2 $3"
+		;;
+esac
+
+echo $msg
+grep $opt $2 $1
+```
+
+## Chapter 4 - Creating code snippets
+
+
+In this chapter you will learn about:
+- Creating abbreviations in `.vimrc`
+- Reading snippets with vim text editor
+- Using color in terminal
+
+### Abbreviations
+
+The abbreviations will be written in the `.vimrc` file and as soo as you type the last char and space or newline, the abbr will expand to the shortcut
+
+Syntax:
+
+```sh
+abbr <shortcut><string>
+```
+
+E.g.
+
+```sh
+abbr _sh #/bin/bash
+```
+
+### Using code snippets
+
+Code is snippets is code prepared that can be read into the current script. Using vim, we can easily read the contents of other files while editing.
+
+```sh
+ESC
+:r <path-and-filename>
+```
+
+E.g. Read the if snippet from the snippets folder
+
+```sh
+ESC
+:r $HOME/snippets/if
+```
+
+It is not required to share the dir with other users, so it can be made private
+
+```sh
+mkdri -m 700 $HOME/snippets
+```
+
+### Bringing color to the terminal
+
+We can display colored text by using the `-e` option with echo. The colors can be written directly or stored in variables.
+
+The variables can be stored in `$HOME/snippets/color` and invoked at runtime by using source 
+```sh
+source $HOME/snippets/color
+```
+
+`$HOME/snippets/color`
+```sh
+RED="\033[31m"
+GREEN="\033[32m"
+BLUE="\033[34m"
+RESET="\033[0m"
+```
+
+RESET is used to go back to the default text color
+
+E.g.
+```sh
+echo -e "${RED}$USER is logged in${RESET}"
+```
