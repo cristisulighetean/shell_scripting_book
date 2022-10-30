@@ -276,6 +276,7 @@ grep $opt $2 $1
 
 
 In this chapter you will learn about:
+
 - Creating abbreviations in `.vimrc`
 - Reading snippets with vim text editor
 - Using color in terminal
@@ -341,3 +342,173 @@ E.g.
 ```sh
 echo -e "${RED}$USER is logged in${RESET}"
 ```
+
+## Chapter 5 - Alternative Syntax
+
+In this chapter, we will look at:
+
+- Test conditionals
+- Providing parameters defaults
+- When in doubt - qoute!
+- Advanced tests using `[(`
+- Arithmetic operations using `((`
+
+### Testing files
+
+Test existance of a file using `-e`. Or test if it is a regular file by the `-f` option.
+
+[Test command man page](https://ss64.com/bash/test.html)
+
+```sh
+test -e /etc/hosts
+test -f /etc/hosts
+```
+
+N.B. Check return code by `echo $?`
+
+#### Adding logic
+
+`-o` => OR
+
+`-a` => AND
+
+Test if the `/etc/hosts` file is a regular file `AND` is has read permision.
+
+```sh
+test -f /etc/hosts -a -r /etc/hosts
+```
+
+### Square brakets as not seen before
+
+Replacing the test command with the square brackets. Using the previous example, now we will transform it using square brakets.
+
+```sh
+[ -f /etc/hosts -a -r /etc/hosts ]
+```
+
+Another example but in this one, we are using variables
+
+```sh
+FILE=/etc/hosts
+[ -f $FILE -a -r $FILE ] && cat $FILE
+```
+
+### Providing parameter defaults
+
+#### Variables
+
+Variables are one type of parameter which can be set by the system or by ourselves. They are not read only like special parameters
+
+e.g. `$USER`
+
+#### Special parameters
+
+Special parameters are the second parameter type and are managed by the shell itself and are presented as `read-only`. 
+
+```sh
+echo "My shell is $0 and the shell options are: $-"
+```
+
+The option `$-` represents the shell options that are configured. These can be displayes using the `set -o` command but it can be read programatically using `$-`.
+
+### Setting defaults
+
+Parameter substitution example
+Syntax:
+
+```sh
+${parameter-default}
+name=${1-"Anonymus"}
+```
+
+### When in doubt - Quote!
+
+The correct term that we should use for reading the value of the value of parameters is `parameter expansion`. The `$` symbol is used to allow the expansion of the parameter.
+
+So in the case of a parameter name that includes spaces e.g. `my file`, the parameter expansion operation will output 2 arguments `my` , `file` instead of a single name.
+
+It can be mittigated by quoting the the argument when used.
+
+```sh
+FILE="my file"
+[ -f "$FILE" -a -r "$FILE" ] && cat "$FILE"
+```
+
+### Advanced test using `[[`
+
+#### Whitespace
+
+Reconsidering the condition we tested earlier, we can omit the quotes when using [[ ,as shown in the following example. Note that you can also use `&&` and `||` to represent AND and OR respectively.
+
+```sh
+echo "The file contents">"my file"
+FILE="my file"
+[[ -f $FILE && -r $FILE ]] && cat "$FILE"
+```
+
+#### Other advanced features
+
+Pattern maching. The following example will copy only the `.pl` file to the scripts folder.
+
+```sh
+[[ $FILE = *.pl ]] && cp "$FILE" scripts/
+```
+
+Regular expressions. We can also use regex with the `[[`
+
+```sh
+[[ $FILE = ~\.pl$ ]] && cp "$FILE" scripts/
+```
+
+##### Regular expression script
+
+```sh
+#!/bin/bash
+
+# Turn off case sensitivity
+shopt -s nocasematch
+read -p "Type color or mono for script output: "
+if [[ $REPLY =~ colou?r ]] ; then
+	source $HOME/snippets/color
+fi
+
+# Where parameters are not set, the display will be mono
+echo -e "${GREEN} This is $0 $RESET"
+# Reset case sensitivity
+shopt -u nocasematch
+exit 0
+```
+
+### Arithmetic operations using `((`
+
+When using bash and some other advanced shells, we may make use of the `(( ))` notation to simplify mathematical operations with scripts.
+
+Simple math.
+
+```sh
+a=(( 2 + 3))
+let a=2+3
+```
+
+Parameter manipulation.
+
+```sh
+COUNT=1
+(( COUNT++ ))
+echo $COUNT
+
+#or
+(( COUNT=COUNT+1 ))
+#or
+(( COUNT-- ))
+#or
+(( COUNT=COUNT-1 ))
+```
+
+Standard arithmetic tests. 
+
+```sh
+(( COUNT > 1 )) && echo "Counter is greater than 1"
+```
+
+# Chapter 6 - Iterating with loops
