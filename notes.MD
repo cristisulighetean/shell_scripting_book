@@ -511,4 +511,136 @@ Standard arithmetic tests.
 (( COUNT > 1 )) && echo "Counter is greater than 1"
 ```
 
-# Chapter 6 - Iterating with loops
+## Chapter 6 - Iterating with loops
+
+In this chapter we will cover
+- For loops
+- Loop control
+- While and until
+- Read from file
+- Creating operator menu
+
+### For loops
+
+Example of a for loop
+
+```sh
+for u in bob joe ; do
+	useradd $u
+	echo '$u:Password1' | chpasswd
+	passwd -e $u
+done
+```
+
+or 
+
+```sh
+for f in * ; do
+	stat "$f"
+done
+```
+
+- The stat command is used to print the inode metadata
+
+### Controlling the loop
+
+The `break` keyword is used to exit the loop processing no more entries, whereas the `continue` keyword is used to stop the processing of the current entry in the loop and resume the processing with the next entry.
+
+By using the following program we want to set permisions, but for directories only.
+
+```sh
+for f in * ; do
+	[ -d "$f" ] || continue
+	chmod 777 "$f"
+done
+```
+
+Print the first directory encountered
+
+```sh
+for f in * ; do
+[ -d "$f" ] && break
+done
+echo "We have found a directory $f"
+```
+
+The following program searches the current directory for other files which are directories and appends them to the `dir_name` list
+
+```sh
+for f in * ; do [ -d "$f" ] || continue
+dir_name="$dir_name $f"
+done
+echo "$dir_name"
+```
+
+### While loope and until loops
+
+When using the for loop we iterate through a `list` (important concept), it's either the one that we create or the one that is dynamically generated. Using the while or until loops, we loop based on the fact that `the condition` becomes either true or false.
+
+A while loop loops while the condition is true and conversely an until loop will loop while the condition is false.
+
+```sh
+COUNT=10
+while ((COUNT >= 0)) ; do
+	echo -e "$COUNT \c"
+	(( COUNT-- ))
+done ; echo
+```
+
+**Note**:The use of the \c escape sequence used here allows the suppression of the line-feed normally used with echo.
+
+Now using the `until` loop
+
+```sh
+COUNT=10
+until ((COUNT < 0)) ; do
+echo -e "$COUNT \c"
+((COUNT--))
+done ; echo
+```
+
+### Reading input from files
+
+The shell built-in read command that we saw earlier in this book can be used to read a file line by line. In this way, we can use a loop to process each line of a file.
+
+
+The following program reads a server IP from a file an pings it to check if it is up and running, then adds it to a file
+
+```sh
+if [ ! -f "$1" ] ; then
+	echo "The input to $0 should be a filename"
+	exit 1
+fi
+
+echo "The following servers are up on $(date +%x)" > server.out
+
+while read server
+do
+	ping -c1 "$server" && echo "Server up: $server" >> server.out
+done < $1
+cat server.out
+```
+
+### Creating operator menus
+
+Example
+
+```sh
+while true
+do
+    clear
+    echo "Choose an item: a, b, or c"
+    echo "a: Backup"
+    echo "b: Display calendar"
+    echo "c: Exit"
+    read -sn1
+    case "$REPLY" in
+        a) tar fczP $HOME/backup.tgz ${HOME}/bin;;
+        b) cal;;
+        c) exit 0;;
+    esac
+    read -n1 -p "Press any key to continue"
+done
+```
+
+## Chapter 7 - Creating building blocks with functions
