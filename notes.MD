@@ -20,7 +20,7 @@ Read last status code
 echo $1
 ```
 
-## Working with arguments
+### Working with arguments
 
 `$0` - name of the script itself and it is often used in usage statements
 
@@ -50,7 +50,7 @@ Alternative using single qoutes ''
 echo "You are using 'basename $0'"
 ```
 
-## Debugging scripts
+### Debugging scripts
 
 Output verbose info (line by line) by using `-v`
 
@@ -190,7 +190,7 @@ Options to verify for different file types
 - -b: file is block device
 - -c: file is char device
 
-## Creating conditonals statements usinf if
+### Creating conditonals statements usinf if
 
 - Example can be found in /bin/hello5.sh
 
@@ -203,7 +203,7 @@ if condition ; then
 fi
 ```
 
-## Extending if with else
+### Extending if with else
 
 Syntax:
 
@@ -513,7 +513,7 @@ Standard arithmetic tests.
 
 ## Chapter 6 - Iterating with loops
 
-In this chapter we will cover
+In this chapter we will cover:
 - For loops
 - Loop control
 - While and until
@@ -644,3 +644,85 @@ done
 ```
 
 ## Chapter 7 - Creating building blocks with functions
+
+In this chapter we will cover:
+- Functions
+- Passing arguments to functions
+- Returning values
+
+### Functions
+
+Functions are blocks of code that exist in memory as named elements. To display the functions residing in the shell environment, you can use `declare -F`.
+
+By using the `-f <function_name>` flag, you also display the associated definition. To only display the definition for a specific function, use: `type <function_name>`
+
+Syntax of function
+
+```sh
+function <function_name> {
+	<code_to_execute>
+}
+```
+
+Example of function to display system information:
+
+```sh
+function show_system {
+	echo "The uptime is:"
+	uptime; echo
+	echo "CPU details:"
+	lscpu; echo
+	echo "User list:"
+	who
+}
+```
+
+### Passing parameters to functions
+
+Earlier within this chapter, we referred to functions as scripts within scripts and we will still maintain that analogy.
+
+One liner to remove comment lines using sed
+
+```sh
+sed -i.bak '/^\s*#/d;/^$/d' <filename>
+```
+
+Breaking down the command:
+- `sed -i.bak` - It edits the file and creates a backup file (with extension.bak) of the original which can be accessed at `<file_name>.bak`.
+- `/^` - Lines that start with, that is the first character of the line.
+- `\s*` - This means any amount of white space including no spaces or tabs.
+- `#/` - Followed by the comment. Altogether `/^\s*#/` we are looking for lines that begin with a comment or spaces and a comment.
+- `d` - The action delete to remove matching lines.
+- `;/^$/d` - The semi-colon is used to separate expressions and the second expression is similar to the first but this time we are preparing to delete empty lines or lines that being with the end of line marker $.
+
+```sh
+function clean_file {
+	sed -i.bak '/^\s*#/d;/^$/d' $1
+}
+```
+
+The following are the detailed steps we need to follow to perform the test on the new function:
+
+1. Create the `clean_file` function as described.
+2. Move to your home directory using the cd command without arguments.
+3. Copy the time configuration file to your home directory: `cp /etc/ntp.conf $HOME`.
+4. Count the number of lines in the file with the following command: `wc -l $HOME/ntp.conf`.
+5. Now, remove the commented and empty lines with: `clean_file $HOME/ntp.conf`.
+6. Now, recount the lines using: `wc -l $HOME/ntp.conf`.
+7. From the backup of the original that we created: `wc -l $HOME/ntp.conf.bak`.
+
+### Returning values from functions
+
+```sh
+function to_lower {
+    output=$(tr [A-Z] [a-z] <<<"$1")
+return $output
+}
+```
+
+Stepping through the code we can begin to understand the operation of this function:
+- `output=$(tr [A-Z] [a-z] <<< "$1")` - This is the main engine of the function where the translation from upper case to lower case occurs. 
+- The use of the here string operator `<<<` allows us to expand the variable to read in to the contents to the `tr` program. This is a form of input redirection.
+- `return $output`: This is how we create the return value.”
+
+## Chapter 8 - Introducing SED
