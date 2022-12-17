@@ -2,16 +2,19 @@
 
 ## Chapter 1 - Intro
 
-Command2 is executed only if command1 exits with status code other than 0
+### Examples of logical operators and outcome
+#
+
+`OR` - `command2` is executed only if `command1` exits with status code `other` than 0
 
 ```sh
-command1 || command2'
+command1 || command2
 ```
 
-Command 2 is executed only if command1 exists with status code 0
+`AND` - `command2` is executed only if `command1` exists with status code 0
 
 ```sh
-command1 && command 2
+command1 && command2
 ```
 
 Read last status code
@@ -21,44 +24,57 @@ echo $1
 ```
 
 ### Working with arguments
+#
 
 `$0` - name of the script itself and it is often used in usage statements
 
-`$1` - positional argument, 1st argument passed to the script
+`$1` - positional argument, `1st_argument` passed to the script
+- the other arguments can be retrieved with $n where n is the number of the argument passed
 
-`${10}` - where 2 or more digits are required to represent the argument position
+`${10}` - this is the formula where 2 or more digits are required to represent the argument position
 
 `$#` - argument count - useful when we need to set the amount of args needed for correct script execution
 
 `$*` - refers to all args
 
-Escape keywords by using `\` and double qoutation marks `""` and not `''`
+### Other tricks
+#
+
+Escape keywords by using `\` and double qoutation marks `""` and not single quotation marks `''`
 
 ```sh
 echo "$USER earns \$4" 
 ```
 
-Printing the name of the command - Syntax $(..) is used to evaluate output of inner command
+Printing the name of the command - Syntax $(..) is used to evaluate `output of inner command`
 
 ```sh
 echo "You are using $(basename $0)"
 ```
 
-Alternative using single qoutes ''
+Alternative using `single qoutes` ''
 
 ```sh
 echo "You are using 'basename $0'"
 ```
 
-### Debugging scripts
+Changing the shell environment
 
-Output verbose info (line by line) by using `-v`
+```sh
+exec zsh
+exec bash
+```
+
+### Debugging scripts
+#
+
+Flag `-v` will output verbose info (line by line)
 
 ```sh
 bash -v hello2.sh Fred
 ```
 
-Will output commands as they are executed
+Flag `-x` will output commands as they are executed
 
 ```sh
 bash -x hello2.sh Fred
@@ -66,7 +82,7 @@ bash -x hello2.sh Fred
 
 ## Chapter 2 - Creating Interactive Scripts
 
-Using echo with options. Supressing the new line
+Using echo with options. Supressing the new line by using either `-n` or `-e` flag
 
 ```sh
 echo -n "Which dir do you want to use? "
@@ -74,15 +90,16 @@ echo -e "Which dir do you want to use? \c"
 ```
 
 ### Using read
+#
 
-The name var will be populated with the entered prompt. Does not work with ZSH
+The name `var` will be populated with the entered prompt. Does not work with `zsh`, only in `bash`.
 
 ```sh
 read -p "Enter your name: " name
 echo $name
 ```
 
-`'-p'` option syntax
+Syntax for reading to variable
 
 ```sh
 read -p <prompt> <variable_name>
@@ -103,7 +120,8 @@ read ans
 
 ## Chapter 3 - Conditionals Attached
 
-### Simple decision paths using command-line lists
+### Simple decision paths using command-line lists (using the `test` command)
+#
 
 Command-line lists: 2 or more statements that are joined using either AND or OR notations
 
@@ -113,15 +131,16 @@ Test if a script is run from user's home dir
 test $PWD == $HOME || cd $HOME
 ```
 
-Test if a user is "username" and then write a message to his console
+Test if a user is `pi` and then write a message to his console
 
 ```sh
 who | grep pi ? /dev/null 2>&1 write pi < message.txt
 ```
 
-### Verifying user input with lists
+### Verifying user input with lists (using the `test` command)
+#
 
-Tests if there exists a first argument then exec 2nd command
+Tests if there exists a first argument then execute 2nd command
 
 ```sh
 test -z $1 || echo "Hello $1"
@@ -134,35 +153,47 @@ test EXPRESSION
 test !EXPRESSION
 ```
 
-If we want to include multiple expressions, we could do it with AND (-a) and OR (-o)
+If we want to include multiple expressions, we could do it with AND `(-a) `and OR `(-o)`
 
 ```sh
 test EXPRESSION -a EXPRESSION
 test EXPRESSION -o EXPRESSION
 ```
 
-The following has the same meaning (SHORTHAND VERSION]
+The following has the same meaning [SHORTHAND VERSION]
 
 ```sh
 [ EXPRESSION -a EXPRESSION ]
 ```
 
 ### Testing strings
+#
 
 - Test if user is root
-$ test $USER = root
-$ [ $USER = root ]
+
+```sh
+test $USER = root
+[ $USER = root ]
+```
 
 - Test if user is connected via SSH by verifying the SSH_TTY variable in user env
-$ test -n $SSH_TTY
 
-- Test is a string is non-zero
-$ test -z $1
-$ [ -z $1 ]
+```sh
+test -n $SSH_TTY
+[ -n $SSH_TTY ]
+```
+
+- Test is a `string is non-zero`
+
+```sh
+test -z $1
+[ -z $1 ]
+```
 
 ### Testing integers
+#
 
-Testing if no of positional arg is greater than 0
+Testing if no. of positional arg is greater than 0
 
 ```sh
 [ $# -gt 0]
@@ -170,6 +201,7 @@ Testing if no of positional arg is greater than 0
 ```
 
 ### Testing file types
+#
 
 We can also test for the existence of a file or file type. e.g We want to delete a file only if it is s symbolic link
 
@@ -191,6 +223,7 @@ Options to verify for different file types
 - -c: file is char device
 
 ### Creating conditonals statements usinf if
+#
 
 - Example can be found in /bin/hello5.sh
 
@@ -217,7 +250,7 @@ fi
 
 ### Using case statements
 
-In bash we can use the 'case' statement to test for simple values, such as int or strings
+In bash we can use the '`case`' statement to test for simple values, such as int or strings
 
 Syntax:
 
@@ -282,13 +315,14 @@ In this chapter you will learn about:
 - Using color in terminal
 
 ### Abbreviations
+#
 
-The abbreviations will be written in the `.vimrc` file and as soo as you type the last char and space or newline, the abbr will expand to the shortcut
+The abbreviations will be written in the `.vimrc` file and as soon as you type the last char and space or newline, the abbreviations will expand to the shortcut
 
 Syntax:
 
 ```sh
-abbr <shortcut><string>
+abbr <shortcut> <string>
 ```
 
 E.g.
@@ -298,8 +332,9 @@ abbr _sh #/bin/bash
 ```
 
 ### Using code snippets
+#
 
-Code is snippets is code prepared that can be read into the current script. Using vim, we can easily read the contents of other files while editing.
+Code is snippets is code prepared that can be read into the current script. Using `vim`, we can easily read the contents of other files while editing.
 
 ```sh
 ESC
@@ -328,7 +363,7 @@ The variables can be stored in `$HOME/snippets/color` and invoked at runtime by 
 source $HOME/snippets/color
 ```
 
-`$HOME/snippets/color`
+File contents of: `$HOME/snippets/color`
 ```sh
 RED="\033[31m"
 GREEN="\033[32m"
@@ -336,11 +371,11 @@ BLUE="\033[34m"
 RESET="\033[0m"
 ```
 
-RESET is used to go back to the default text color
+`RESET` is used to go back to the default text color
 
 E.g.
 ```sh
-echo -e "${RED}$USER is logged in${RESET}"
+echo -e "${RED}$USER is logged in ${RESET}"
 ```
 
 ## Chapter 5 - Alternative Syntax
@@ -354,6 +389,7 @@ In this chapter, we will look at:
 - Arithmetic operations using `((`
 
 ### Testing files
+#
 
 Test existance of a file using `-e`. Or test if it is a regular file by the `-f` option.
 
@@ -367,6 +403,7 @@ test -f /etc/hosts
 N.B. Check return code by `echo $?`
 
 #### Adding logic
+#
 
 `-o` => OR
 
@@ -379,6 +416,7 @@ test -f /etc/hosts -a -r /etc/hosts
 ```
 
 ### Square brakets as not seen before
+#
 
 Replacing the test command with the square brackets. Using the previous example, now we will transform it using square brakets.
 
@@ -394,14 +432,15 @@ FILE=/etc/hosts
 ```
 
 ### Providing parameter defaults
+#
 
-#### Variables
+#### `Variables`
 
-Variables are one type of parameter which can be set by the system or by ourselves. They are not read only like special parameters
+Variables are one type of parameter which can be set by the system or by ourselves. They can be read with the `$` symbol before the variable.
 
 e.g. `$USER`
 
-#### Special parameters
+#### `Special parameters`
 
 Special parameters are the second parameter type and are managed by the shell itself and are presented as `read-only`. 
 
@@ -412,9 +451,9 @@ echo "My shell is $0 and the shell options are: $-"
 The option `$-` represents the shell options that are configured. These can be displayes using the `set -o` command but it can be read programatically using `$-`.
 
 ### Setting defaults
+#
 
-Parameter substitution example
-Syntax:
+Parameter substitution example syntax (`Anonymus` being the default value):
 
 ```sh
 ${parameter-default}
@@ -422,6 +461,7 @@ name=${1-"Anonymus"}
 ```
 
 ### When in doubt - Quote!
+#
 
 The correct term that we should use for reading the value of the value of parameters is `parameter expansion`. The `$` symbol is used to allow the expansion of the parameter.
 
@@ -435,10 +475,11 @@ FILE="my file"
 ```
 
 ### Advanced test using `[[`
+#
 
 #### Whitespace
 
-Reconsidering the condition we tested earlier, we can omit the quotes when using [[ ,as shown in the following example. Note that you can also use `&&` and `||` to represent AND and OR respectively.
+Reconsidering the condition we tested earlier, we can `omit the quotes` when using [[, as shown in the following example. Note that you can also use `&&` and `||` to represent AND and OR respectively.
 
 ```sh
 echo "The file contents">"my file"
@@ -460,7 +501,8 @@ Regular expressions. We can also use regex with the `[[`
 [[ $FILE = ~\.pl$ ]] && cp "$FILE" scripts/
 ```
 
-##### Regular expression script
+### Regular expression script
+#
 
 ```sh
 #!/bin/bash
@@ -479,7 +521,14 @@ shopt -u nocasematch
 exit 0
 ```
 
+ `if [[ $REPLY =~ colou?r ]] ; then` 
+ 
+ The regular expression caters to both spellings of color by making the u optional: `u?`. Furthermore, we can disable case sensitivity allowing for COLOR and color by setting a shell option: 
+ 
+ `shopt -s nocasematch`
+
 ### Arithmetic operations using `((`
+#
 
 When using bash and some other advanced shells, we may make use of the `(( ))` notation to simplify mathematical operations with scripts.
 
@@ -514,15 +563,16 @@ Standard arithmetic tests.
 ## Chapter 6 - Iterating with loops
 
 In this chapter we will cover:
-- For loops
+- `for` loops
 - Loop control
-- While and until
+- `while` and `until`
 - Read from file
 - Creating operator menu
 
 ### For loops
+#
 
-Example of a for loop
+Example of a for loop (iterating over the 2 elements). Following examples adds users bob and joe and asks for their password.
 
 ```sh
 for u in bob joe ; do
@@ -532,7 +582,7 @@ for u in bob joe ; do
 done
 ```
 
-or 
+or printing the `inode metadata` by using the `stat` command
 
 ```sh
 for f in * ; do
@@ -540,11 +590,10 @@ for f in * ; do
 done
 ```
 
-- The stat command is used to print the inode metadata
-
 ### Controlling the loop
+#
 
-The `break` keyword is used to exit the loop processing no more entries, whereas the `continue` keyword is used to stop the processing of the current entry in the loop and resume the processing with the next entry.
+The `break` keyword is used to exit the loop, processing no more entries, whereas the `continue` keyword is used to stop the processing of the current entry lsand resume the processing with the next entry.
 
 By using the following program we want to set permisions, but for directories only.
 
@@ -559,25 +608,27 @@ Print the first directory encountered
 
 ```sh
 for f in * ; do
-[ -d "$f" ] && break
+	[ -d "$f" ] && break
 done
 echo "We have found a directory $f"
 ```
 
-The following program searches the current directory for other files which are directories and appends them to the `dir_name` list
+The following program searches the current directory for other files which are directories and `appends` them to the `dir_name` list
 
 ```sh
-for f in * ; do [ -d "$f" ] || continue
-dir_name="$dir_name $f"
+for f in * ; do 
+	[ -d "$f" ] || continue
+	dir_name="$dir_name $f"
 done
 echo "$dir_name"
 ```
 
-### While loope and until loops
+### While loop and until loops
+#
 
 When using the for loop we iterate through a `list` (important concept), it's either the one that we create or the one that is dynamically generated. Using the while or until loops, we loop based on the fact that `the condition` becomes either true or false.
 
-A while loop loops while the condition is true and conversely an until loop will loop while the condition is false.
+A `while loop` loops while the condition is true and conversely an `until loop` will loop while the condition is false.
 
 ```sh
 COUNT=10
@@ -587,7 +638,7 @@ while ((COUNT >= 0)) ; do
 done ; echo
 ```
 
-**Note**:The use of the \c escape sequence used here allows the suppression of the line-feed normally used with echo.
+**Note**:The use of the `\c` escape sequence used here allows the suppression of the line-feed normally used with echo.
 
 Now using the `until` loop
 
@@ -600,8 +651,9 @@ done ; echo
 ```
 
 ### Reading input from files
+#
 
-The shell built-in read command that we saw earlier in this book can be used to read a file line by line. In this way, we can use a loop to process each line of a file.
+The shell built-in `read` command that we saw earlier in this book can be used to read a file line by line. In this way, we can use a loop to process each line of a file.
 
 
 The following program reads a server IP from a file an pings it to check if it is up and running, then adds it to a file
@@ -622,12 +674,12 @@ cat server.out
 ```
 
 ### Creating operator menus
+#
 
 Example
 
 ```sh
-while true
-do
+while true ; do
     clear
     echo "Choose an item: a, b, or c"
     echo "a: Backup"
