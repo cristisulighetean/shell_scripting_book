@@ -778,3 +778,270 @@ Stepping through the code we can begin to understand the operation of this funct
 - `return $output`: This is how we create the return value.”
 
 ## Chapter 8 - Introducing SED
+
+In this chapter, we will look at practical implementations of using `sed` in scripts.
+The Stream Editor and opens the file line by line to search or edit the file contents.
+
+This chapter will cover:
+- Using `grep` to display text
+- Using `regex`
+- Understanding the basics of `sed`
+
+### Displaying received data on an interface
+
+Display the `RX packets` received on `eth0` with `-i` flag for case-insensitive.
+
+```sh
+ifconfig eth0 | grep -i "RX packets"
+```
+
+Display user account in the Linux database
+```sh
+grep "$USER" /etc/passwd
+```
+
+### Check if a user exists
+
+```sh
+read -p "Enter a username" :
+if (grep "$REPLY" /etc/passwd > /dev/null); then
+	echo "The user $REPLY exists"
+	exit 1
+fi
+```
+
+### Listing the number of CPUs in a system
+
+```sh
+# macOS
+sysctl -n hw.ncpu
+# linux
+grep -c name /proc/cpuinfo
+```
+
+Function to check the amount of cores
+
+```sh
+function check_cores {
+    # Check if there is an argument and it is non-zero
+	if [[ "$1" > 0 ]] ; then
+        REQ_CORES=$1
+    else
+        echo "Required number of cores must be positive!"
+        exit 1
+    fi
+
+	if [[ "$OSTYPE" == "linux-gnu"* ]] ; then
+			# Linux
+        	CPU_CORES=$(grep -c name /proc/cpuinfo)
+	elif [[ "$OSTYPE" == "darwin"* ]] ; then
+			# MacOS
+			CPU_CORES=$(sysctl -n hw.ncpu)		
+	else
+			echo "Unknown system"
+			exit 1
+	fi
+
+	if [[ "$CPU_CORES" < "$REQ_CORES" ]] ; then
+		echo "A minimum of $REQ_CORES cores are required"
+        echo "You have currently $CPU_CORES"
+		exit 1
+	fi
+}
+```
+
+### Parse a CSV file
+
+```sh
+OLDIFS="$IFS"
+IFS=","
+while read product price quantity
+do
+echo -e "\033[1;33m$product \
+        ========================\033[0m\n\
+Price : \t $price \n\
+Quantity : \t $quantity \n"
+
+done <"$1"
+IFS=$OLDIFS
+```
+
+Going through the example
+- `OLDIFS="$IFS" - The IFS variable stores the file separator and this is normally a white space. We can store the old IFS so that we can restore it later at the end of the script. Ensuring that we return the same environment once the script is complete, no matter how the script is run.
+- `IFS=","` - We set the separator to a comma to match what we need with a CSV file.
+- `while read product price quantity` - We enter a while loop to populate three variables that we need: product, price, and quantity. The while loop will read the input file, line by line, and populate each of the variables.
+- echo _ - The echo command displays the product name in blue with double underscores underneath. The other variables are printed on new lines and tabbed in.
+- done <"$1" - This is where we read the input file, which we pass as an argument to the script.
+
+### Isolating catalog entries
+
+If we need to search for one entry, then we need more than just one line. The entry is in three lines. So, if we search for the hammer, we need to go to the hammer line and the two lines that follow. We do this using the -A option to grep. We need to display the matching line and two lines after. This will be expressed by the following code:
+
+```sh
+parsecsv.sh tool | grep -A2 hammer
+```
+
+### Using regular expressions
+
+Working with alternate spellings
+
+Returning either colour or color using `RE` operator. In an RE the `? operator` is not the same as in the shell. In an RE the ? operator means that `the previous character is optional`. When running RE with extra operators, we may need to run grep `-E` or egrep for the enhanced RE engine.
+
+```sh
+echo -e "color\ncolour" | grep -E 'colou?r'
+```
+
+Looking for 4 consecutive vowels in a word
+
+```sh
+grep -E '[aeiou]{4}' /usr/share/dict/words
+```
+
+RE anchors
+
+- ^ or carat represents the start of the line
+- $ represents the end of the line
+
+```sh
+grep '^ante' /usr/share/dict/words
+grep 'cord$' /usr/share/dict/words
+```
+
+Basics of `SED`
+
+```sh
+sed -n '1,3 p' /etc/passwd
+sed -n '/^root/ p' /etc/passwd
+```
+
+- `p` printing the pattern space
+- `-n` supress STDOUT
+- '`1,3'` print the number of lines
+
+Substituting command - `s`
+
+With this command we can replace one string with another. By default, we send the output to STDOUT and do not edit the file. To edit the file, we have to mention the flag `-i`.
+
+We should make a backup before we make the change by appending a string directly after the `-i` option and without any spaces. This is shown in the following example:
+
+```sh
+sed -i.bak ' /^pi/ s@/bin/bash@/bin/sh/ ' $HOME/passwd
+```
+
+Excerpt From
+Mastering Linux Shell Scripting
+Andrew Mallett
+This material may be protected by copyright.
+
+Replace default shell of user `pi`.
+```sh
+“sed -n ' /^pi/ s/bash/sh/p ' /etc/passwd”
+# A better delimiter will be @
+sed -n ' /^pi/ s@/bin/bash@/usr/bin/sh@p ' /etc/passwd
+```
+
+We continue the earlier instance using the `p` command to print the matched pattern and use the `-n` option `to suppress STDOUT`. We search for lines beginning with pi. This represents the username. We then issue the `s` command to substitute text in those matched lines. This takes two arguments, the first is the text to search for and the second represents the text used to replace the original. In this case, we look for `bash` and replace it with `sh`.
+
+If we need to replace more than the first occurrence, we add the g command for global at the end.
+
+```sh
+“sed -n ' /^pi/ s@bash@sh@pg ' /etc/passwd
+```
+
+## Chapter 13 - Perl as Bash Scripting Alternative
+
+- `-e` flag to execute a Perl statement
+- `say` command also includes the new line char
+
+```sh
+perl -e ' print("Hello world!"); '
+```
+
+### Perl arrays
+
+- Using them: `ARGV[0];`
+- Counting elements in array: `scalar @ARGV;`
+- `.` is used to concatenate strings
+
+### For loops
+
+```pl
+foreach $arg (@ARGV) {
+    print("Hello $arg\n");
+}
+```
+
+### Creating arrays
+
+In bash, we do not use the designator when setting a variable and we cannot have spaces surrounding the assignment operator, =. Perl will allow the spaces and aids in the readability with an extra whitespace.
+
+```pl
+@user = ("Fred","Bloggs",24);
+print("$user[0] $user[1] is @user[2]\n");
+```
+
+### Conditional statements
+
+```pl
+exit(2) if scalar @ARGV < 1;
+
+# bash equivalent
+[ $# -lt 1 ] && exit 2
+
+print("Hello $ARGV[0]\n") unless scalar @ARGV == 0;
+
+# bash equivalent
+[ $# -eg 0 ] || echo "$1\n"
+```
+
+### If and unless
+
+Within Perl, as we have already seen in the previous examples, we can make use of negative logic using unless. We both have the traditional if keyword and now unless is an addition. We can use these in our short code, as we have seen or in complete blocks of code.
+
+```pl
+my $count = scalar @ARGV;
+if ($count > 0) {
+  print("You have supplied $count arguments\n");
+  print("Hello $ARGV[0]\n");
+}
+```
+
+Or
+
+```pl
+unless ($count == 0) {
+  print("You have supplied $count arguments\n");
+  print("Hello $ARGV[0]\n");
+}
+```
+
+### Prompt for user input
+
+Perl does not force you to declare the variables, but it is a good idea and a great practice. In fact, we can tell Perl to enforce this with the use of the use strict; line.
+
+
+```pl
+chomp( $name = <STDIN> );
+print("Hello $name\n");
+```
+
+- `chomp` removes the new line from the input
+- by mentioning `my` we will declare the variable into the local scope
+
+### Functions
+
+```pl
+sub prompt_user () {
+   my $n;
+   print($_[0]);
+   chomp( $n = <STDIN> );
+   return($n);
+}
+```
+
+
+
+
+
+
+
